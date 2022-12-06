@@ -10,25 +10,14 @@ extern crate scan_fmt;
 use measure_time::{debug_time, error_time, info_time, print_time, trace_time};
 
 fn main() {
-    let input = fs::read_to_string("./input").unwrap();
+    let input: Vec<char> = fs::read_to_string("./input").unwrap().chars().collect::<Vec<char>>();
     print_time!("measure function");
-
-    part1(&input);
+    println!("Part 1: {}", find_unique_permutations(&input, 4));
+    println!("Part 2: {}", find_unique_permutations(&input, 14));
 }
 
-fn part1(input: &String) {
-    let pos = input
-        .chars()
-        .tuple_windows::<(char, char, char, char)>()
-        .find_position(|t| {
-            let (a, b, c, d) = t;
-            let chars = [a, b, c, d];
-            let set = chars.iter().collect::<HashSet<_>>();
-            dbg!(&set);
-            set.len() == 4
-        })
-        .map(|p| p.0)
-        .unwrap();
-
-    println!("pos {}", pos + 4);
+fn find_unique_permutations(input: &[char], window: usize) -> usize{
+    input.windows(window).enumerate().find(|(i, w)| {
+        w.iter().sorted().tuple_windows::<(&char, &char)>().all(| w| w.0 != w.1)
+    }).unwrap().0+window
 }
